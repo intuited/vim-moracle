@@ -3,12 +3,15 @@ python3 import moracle as mtg
 echo "moracle: loading MTG db..."
 python3 mtgdb = mtg.load_db()
 
-"" add maxwidth arg
-function! moracle#oneline(cardname)
-  return py3eval('mtg.format_oneline(mtgdb[vim.eval("a:cardname").lower()])')
+function! moracle#oneline(cardname, ...)
+  let width = a:0 ? a:1 : 0
+
+  return py3eval('mtg.format_oneline(mtgdb[vim.eval("a:cardname").lower()],
+                                   \ int(vim.eval("width")))')
 endfunction
 
-"" add maxwidth arg
-function! moracle#full(cardname)
-  return py3eval('mtg.format_full(mtgdb[vim.eval("a:cardname").lower()])')
+function! moracle#full(cardname, ...)
+  let width = a:0 ? a:1 : 0
+  return py3eval('mtg.format_full(mtgdb[vim.eval("a:cardname").lower()],
+                                \ int(vim.eval("width")))')
 endfunction
