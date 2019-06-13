@@ -18,11 +18,9 @@ endfunction
 
 " Return valid card completions as a list.
 function! moracle#CompleteStart(ArgLead, CmdLine, CursorPos)
-  echo "ArgLead: " . a:ArgLead
   let result =  py3eval('[v["name"] for v in
                  \ mtg.lookup_start(mtgdb,
                                   \ vim.eval("a:ArgLead")).values()]')
-  echo "result: " . string(result)
   return result
 endfunction
 
