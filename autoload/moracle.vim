@@ -25,3 +25,25 @@ function! moracle#CompleteStart(ArgLead, CmdLine, CursorPos)
   echo "result: " . string(result)
   return result
 endfunction
+
+function! moracle#ReplaceCardNameWithOneline()
+  let lineno = line('.')
+  let linetext = getline('.')
+  let column = col('.')
+  let result = py3eval('mtg.identify_card_name(mtgdb,
+                      \ vim.eval("linetext"),
+                      \ int(vim.eval("column")))')
+  if type(result) == type([])
+    let start_pos = result[0]
+    let end_pos = result[1]
+    let card_name = result[2]
+    let oneline = moracle#Oneline(card_name)
+    if start_pos == 0
+      let newline = oneline . linetext[end_pos+1:]
+    else
+      let newline = linetext[:start_pos-1] . oneline . linetext[end_pos+1:]
+    endif
+    call setline(lineno, newline)
+  endif
+
+endfunction
