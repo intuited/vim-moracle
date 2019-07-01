@@ -45,3 +45,31 @@ function! moracle#ReplaceCardNameWithOneline()
   endif
 
 endfunction
+
+" Returns the name of the card at the current cursor position
+function! moracle#CardNameAtCursor()
+  let lineno = line('.')
+  let linetext = getline('.')
+  let column = col('.')
+  return py3eval('mtg.identify_card_name(mtgdb,
+                \ vim.eval("linetext"),
+                \ int(vim.eval("column")))')
+endfunction
+
+" Echoes the list of printings for the card name at cursor.
+function! moracle#EchoCardPrintings()
+  result = moracle#CardNameAtCursor()
+
+  if type(result) == type([])
+    let card = result[2]
+    echo string(py3eval('mtgdb[vim.eval("card").lower()]["printings"]'))
+  endif
+endfunction
+
+" Return a list containing a dict for each matching card in `db`.
+" Matching occurs if the value for item `key` in `db`
+" contains `string`.
+" Searching ignores case.
+function! moracle#SearchDB(key, string)
+  return py3eval('[card["name"] for id, card in iter(mtgdb.items()) if vim.eval("a:key") in card and card[vim.eval("a:key")].lower().find(vim.eval("a:string").lower()) > -1]')
+endfunction
