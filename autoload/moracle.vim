@@ -1,7 +1,11 @@
-python3 import moracle as mtg
+python3 import sys
+" Tell python where to look for the `moracle` python module
+python3 sys.path.append(vim.eval("expand('<sfile>:h:h')"))
 
-echo "moracle: loading MTG db..."
+python3 import moracle as mtg
+echo "moracle: loading MTG database..."
 python3 mtgdb = mtg.load_db()
+echo "moracle: MTG database successfully loaded."
 
 function! moracle#Oneline(cardname, ...)
   let width = a:0 ? a:1 : 0
