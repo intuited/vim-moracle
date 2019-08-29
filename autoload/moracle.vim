@@ -98,3 +98,36 @@ endfunction
 function! moracle#SearchDB(key, string)
   return py3eval('[card["name"] for id, card in iter(mtgdb.items()) if vim.eval("a:key") in card and card[vim.eval("a:key")].lower().find(vim.eval("a:string").lower()) > -1]')
 endfunction
+
+" Completion
+function! moracle#AutoCompleteFindStart()
+  let i=0
+  while i > -1
+    let string = getline('.')[i:col('.')]
+    echo "i: " . i . "; string: '" . string . "';"
+    if py3eval('list(mtg.lookup_start(mtgdb, vim.eval("string")).keys())') != []
+      return i
+    else
+      " TODO: verify that word/nonword delimitation is consistent
+      " skip to beginning of next word
+      let i += match(string, '\s\zs\S')
+    endif
+  endwhile
+  return -1
+endfunction
+
+function! moracle#AutoCompleteName(findstart, base)
+  if a:findstart
+    return moracle#AutoCompleteFindStart()
+  else
+    return py3eval('[v["name"] for v in mtg.lookup_start(mtgdb, vim.eval("a:base")).values()]')
+  endif
+endfunction
+
+function! moracle#AutoCompleteOneline(findstart, base)
+  if a:findstart
+    return moracle#AutoCompleteFindStart()
+  else
+    return py3eval('[mtg.format_oneline(v) for v in mtg.lookup_start(mtgdb, vim.eval("a:base")).values()]')
+  endif
+endfunction
