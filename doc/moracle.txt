@@ -1,0 +1,84 @@
+ moracle.txt   Magic: The Gathering oracle data in Vim
+
+Author:  Ted Tibbetts
+License: Same terms as Vim itself (see |license|)
+
+INTRODUCTION                                    *moracle*
+
+This package is usable at this point but still a bit rough around the edges.
+
+Completed features:
+- Display full card text in a format similar to that used on an actual card *:CardDisplay*
+- Replace card names with one-line card text *:CardReplace*
+- Autocomplete card names in insert mode with full names or with one-line card text *:CardCompleteNames* *:CardCompleteOneline*
+- Display list of sets the card was printed in *:CardPrintings*
+
+Planned features:
+- sort/group lists of cards by CMC, card type, etc.
+- scrape card price information and add to one-line and full formats
+
+INITIALIZATION                                  *moracle-init*
+
+Note that you'll have to initialize the DB from the command line.
+
+To do this, `cd` into the `vim-moracle` installation directory and run
+`python3 -m moracle -u`
+
+This will update the database used by the `moracle` python module.
+
+CARD DISPLAY                                    *:CardDisplay*
+
+Use `:CardDisplay [card name]` to display full card text in a card-like format.
+For example:
+
+    :CardDisplay Ephara, God of the Polis
+    Legendary Enchantment Creature — God
+    Indestructible
+    As long as your devotion to white and blue is less than seven, Ephara isn't a creature.
+    At the beginning of each upkeep, if you had another creature enter the battlefield under your control last turn, draw a card.
+    6/5
+
+Card name completion is available here
+but it currently does not work across whitespace.
+
+`:CardDisplay` with no arguments will display full card text for the card name
+at the cursor position, if any.
+
+CARD NAME REPLACEMENT                           *:CardReplace*
+
+`:CardReplace` will cause the card name at the cursor position to be replaced
+with a one-line entry containing the card details.
+
+For example, running `:CardReplace` on the line
+
+- Snapcaster Mage^
+
+where ^ represents the cursor position, will transform that text into
+
+- Snapcaster Mage: [1U] C 2/1 Flash	When Snapcaster Mage enters the battlefield, target instant or sorcery card in your graveyard gains flashback until end of turn. The flashback cost is equal to its mana cost. (You may cast that card from your graveyard for its flashback cost. Then exile it.)
+
+This command also works over a visual range.  Use blockwise mode for best results.
+
+INSERT MODE COMPLETION                          *:CardCompleteNames*
+                                                *:CardCompleteOneline*
+
+Running `:CardCompleteNames` will activate user-defined completion on card names.  moracle will attempt to complete the longest card name possible starting from the beginning of the current line, using whitespace as word boundaries.
+
+If `:CardCompleteOneline` is run instead, the completion will append a one-line card description as per |:CardReplace|.
+
+See |i_CTRL-X_CTRL-U| for more information.
+
+FETCHPRICE VARIABLE                             *g:moracle#fetchprice*
+
+If the variable `g:moracle#fetchprice` exists, one-line entries will include pricing information from scryfall.com.
+Pricing information is cached in a local database via the Python `sf_price_fetcher` module.
+
+Thus, if price-fetching behaviour is desired, insert the following into `~/.vimrc`:
+
+    let g:moracle:fetchprice = 1
+
+PRINTINGS                                       *:CardPrintings*
+
+If the command `:CardPrintings` is issued, a List will be echoed to the screen.
+This list will contain three-letter abbreviations for set names
+of each of the printings of the card name at the current cursor position.
