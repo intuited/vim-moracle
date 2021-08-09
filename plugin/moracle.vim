@@ -8,3 +8,10 @@ command! CardPrintings call moracle#EchoCardPrintings()
 
 command! CardCompleteNames set completefunc=moracle#AutoCompleteName
 command! CardCompleteOneline set completefunc=moracle#AutoCompleteOneline
+
+" TODO: figure out how to make this not clobber the namespace
+command! -range -nargs=1 Py3Filter call moracle#FilterLinesThroughPython3("<args>", "<line1>", "<line2>")
+
+command! -range -nargs=? CardSort call moracle#CommandCardSort("<args>", "<line1>", "<line2>")
+
+command! -range -nargs=? CardPricing call moracle#AppendPricing("<args>", "<line1>", "<line2>")
